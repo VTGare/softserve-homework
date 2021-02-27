@@ -33,6 +33,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	//Connect to a Redis database
 	db, err := database.New(cfg.Redis.Host, cfg.Redis.Port)
 	if err != nil {
 		fmt.Println("Failed to connect to Redis. Error: ", err)
@@ -41,10 +42,10 @@ func main() {
 	defer db.Close()
 
 	postService := post.NewService(db, sugar)
-
 	ep := endpoints.NewEndpointSet(postService)
-
 	srv := createServer(cfg, ep, sugar)
+
+	//Run the server in a goroutine to prevent locking.
 	go func() {
 		sugar.Infof("Listening on %v", srv.Addr)
 		if err := srv.ListenAndServe(); err != nil {
@@ -52,6 +53,7 @@ func main() {
 		}
 	}()
 
+	//Gracefully shutdown.
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
@@ -67,8 +69,10 @@ func main() {
 func createServer(cfg *config.Config, ep *endpoints.Set, logger *zap.SugaredLogger) *http.Server {
 	r := mux.NewRouter()
 
+	//Register middlewares
 	r.Use(middlewares.Logger(logger), middlewares.Recover(logger))
 
+	//Register all endpoints here
 	r.Methods("GET").Path("/api/posts/{id}").HandlerFunc(ep.GetEndpoint)
 	r.Methods("DELETE").Path("/api/posts/{id}").HandlerFunc(ep.DeleteEndpoint)
 	r.Methods("GET").Path("/api/posts").HandlerFunc(ep.SearchEndpoint)

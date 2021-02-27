@@ -8,6 +8,7 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+//New connects to a Redis database.
 func New(host, port string) (*redis.Client, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr:       fmt.Sprintf("%v:%v", host, port),

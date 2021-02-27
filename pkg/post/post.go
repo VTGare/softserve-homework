@@ -13,13 +13,16 @@ import (
 	"go.uber.org/zap"
 )
 
+//Order is a order type enum
 type Order int
 
+//Order type enum
 const (
-	Ascending Order = iota
-	Descending
+	Descending Order = iota
+	Ascending
 )
 
+//Post is a response model
 type Post struct {
 	ID        int64     `json:"id"`
 	Name      string    `json:"name"`
@@ -27,6 +30,7 @@ type Post struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+//SearchFilter groups search options
 type SearchFilter struct {
 	Name   string
 	Author string
@@ -38,6 +42,7 @@ type postService struct {
 	logger *zap.SugaredLogger
 }
 
+//NewService creates and returns a new service with a database and a logger.
 func NewService(db *redis.Client, logger *zap.SugaredLogger) Service {
 	return postService{db, logger}
 }

@@ -29,14 +29,19 @@ type authorCount struct {
 	Count int    `json:"count"`
 }
 
+//Error satisfies in-built Error interface
 func (r *jsonResp) Error() string {
 	return r.Message
 }
 
+//responseWriter is a http.ResponseWriter wrapper that adds JSON decoding and encoding methods.
 type responseWriter struct {
 	http.ResponseWriter
 }
 
+//JSON encodes src, writes it to the ResponseWriter and changes Content-Type header to "application/json"
+//
+//Status is 200 by default, you can optionally overwrite it by passing a second argument.
 func (w *responseWriter) JSON(src interface{}, status ...int) {
 	msg, err := json.Marshal(src)
 	if err != nil {
@@ -59,6 +64,17 @@ func (w *responseWriter) JSON(src interface{}, status ...int) {
 	w.Write(msg)
 }
 
+//decodeJSONBody decodes JSON from http.Request.Body to dst. This function errors if any of the following is true:
+//
+//- Content-Type is not application/json,
+//
+//- Body size is larger than 1MB,
+//
+//- Body contains badly formatted JSON,
+//
+//- JSON contains unknown fields
+//
+//- Body is empty
 func decodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) error {
 	if r.Header.Get("Content-Type") != "application/json" {
 		return &jsonResp{http.StatusUnsupportedMediaType, "Content-Type header is not application/json"}

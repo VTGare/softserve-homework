@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+//Set is a set of Post service endpoints.
 type Set struct {
 	GetEndpoint    func(http.ResponseWriter, *http.Request)
 	AddEndpoint    func(http.ResponseWriter, *http.Request)
@@ -19,6 +20,7 @@ type Set struct {
 	CountEndpoint  func(http.ResponseWriter, *http.Request)
 }
 
+//NewEndpointSet creates a set of endpoints aware of our service.
 func NewEndpointSet(svc post.Service) *Set {
 	return &Set{
 		GetEndpoint:    makeGetEndpoint(svc),
@@ -90,7 +92,7 @@ func makeSearchEndpoint(svc post.Service) func(http.ResponseWriter, *http.Reques
 		rw := &responseWriter{w}
 
 		//Descending sort by default
-		order := post.Descending
+		var order post.Order
 		if query := r.URL.Query().Get("order"); query != "" {
 			switch query {
 			case "asc":
@@ -159,6 +161,7 @@ func makeCountEndpoint(svc post.Service) func(http.ResponseWriter, *http.Request
 			rw.JSON(jsonResp{http.StatusInternalServerError, err.Error()}, http.StatusInternalServerError)
 		}
 
+		//Turn the database result into a pretty struct. I'd normally do that in a separate views package, but it's not a common practice with microservices
 		authors := make([]*authorCount, 0, len(res))
 		count := 0
 		for author, num := range res {

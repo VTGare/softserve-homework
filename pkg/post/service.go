@@ -6,6 +6,7 @@ import (
 	"go.uber.org/zap"
 )
 
+//Service is a Post service interface which contains all business logic.
 type Service interface {
 	Create(context.Context, *Post) (int64, error)
 	FindOne(context.Context, int64) (*Post, error)

@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+//Config contains all application configuration.
 type Config struct {
 	Host  string `json:"host"`
 	Port  string `json:"port"`
@@ -14,6 +15,7 @@ type Config struct {
 	} `json:"redis"`
 }
 
+//New returns a new Config from a file located in path.
 func New(path string) (*Config, error) {
 	file, err := os.ReadFile(path)
 	if err != nil {
