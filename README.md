@@ -21,3 +21,11 @@ softserve-homework requires a **config.json** file in **working directory** to w
     "port": "3000"
 }
 ```
+
+## Project layout
+1. `cmd/post` - project's main application and entry point.
+2. `internal` - private application code used around all packages.
+    - `config` - app configuration package.
+    - `database` - creates database connection.
+    - `middlewares` - collection of useful net/http compatible middlewares.
+3. `pkg/post` - application's business logic.
