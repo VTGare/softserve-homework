@@ -69,11 +69,11 @@ func createServer(cfg *config.Config, ep *endpoints.Set, logger *zap.SugaredLogg
 
 	r.Use(middlewares.Logger(logger), middlewares.Recover(logger))
 
-	r.Methods("GET").Path("/api/count").HandlerFunc(ep.CountEndpoint)
 	r.Methods("GET").Path("/api/posts/{id}").HandlerFunc(ep.GetEndpoint)
+	r.Methods("DELETE").Path("/api/posts/{id}").HandlerFunc(ep.DeleteEndpoint)
 	r.Methods("GET").Path("/api/posts").HandlerFunc(ep.SearchEndpoint)
-	r.Methods("DELETE").Path("/api/posts").HandlerFunc(ep.DeleteEndpoint)
 	r.Methods("POST").Path("/api/posts").HandlerFunc(ep.AddEndpoint)
+	r.Methods("GET").Path("/api/count").HandlerFunc(ep.CountEndpoint)
 
 	return &http.Server{
 		Addr:         fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
