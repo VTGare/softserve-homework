@@ -54,7 +54,8 @@ func (ps postService) Create(ctx context.Context, post *Post) (int64, error) {
 	}
 
 	_, err = ps.db.Pipelined(ctx, func(pipe redis.Pipeliner) error {
-		pipe.HSet(ctx, fmt.Sprintf("post:%v", id), "name", post.Name, "author", post.Author, "created_at", post.CreatedAt.Unix())
+		unix := post.CreatedAt.Unix()
+		pipe.HSet(ctx, fmt.Sprintf("post:%v", id), "name", post.Name, "author", post.Author, "created_at", unix)
 		pipe.SAdd(ctx, fmt.Sprintf("names:%v", post.Name), id)
 		pipe.SAdd(ctx, fmt.Sprintf("authors:%v", post.Author), id)
 
