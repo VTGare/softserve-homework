@@ -38,7 +38,7 @@ func makeGetEndpoint(svc post.Service) func(http.ResponseWriter, *http.Request) 
 
 		id, err := strconv.ParseInt(vars["id"], 10, 64)
 		if err != nil {
-			rw.JSON(jsonResp{http.StatusBadRequest, "Error parsing an ID. Provide an integer."}, http.StatusBadRequest)
+			rw.JSON(jsonResp{http.StatusBadRequest, "unable to parse an ID."}, http.StatusBadRequest)
 			return
 		}
 
@@ -46,7 +46,7 @@ func makeGetEndpoint(svc post.Service) func(http.ResponseWriter, *http.Request) 
 		if err != nil {
 			switch {
 			case strings.Contains(err.Error(), "not found"):
-				rw.JSON(jsonResp{http.StatusNotFound, fmt.Sprintf("Post with ID %v is not found", id)}, http.StatusNotFound)
+				rw.JSON(jsonResp{http.StatusNotFound, fmt.Sprintf("post %v was not found.", id)}, http.StatusNotFound)
 				return
 			default:
 				rw.JSON(jsonResp{http.StatusInternalServerError, err.Error()}, http.StatusInternalServerError)

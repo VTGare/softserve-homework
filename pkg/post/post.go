@@ -121,8 +121,7 @@ func (ps postService) FindMany(ctx context.Context, filter *SearchFilter) ([]*Po
 
 				id, err := strconv.ParseInt(strID, 10, 64)
 				if err != nil {
-					ps.logger.Warnf("failed to parse post ID: %v, error: %v", strID, err)
-					continue
+					return nil, err
 				}
 
 				ids = append(ids, id)
@@ -151,14 +150,12 @@ func (ps postService) FindMany(ctx context.Context, filter *SearchFilter) ([]*Po
 	for id, rp := range rawPosts {
 		m, err := rp.Result()
 		if err != nil {
-			ps.logger.Errorf("Error while fetching: %v", err)
-			continue
+			return nil, err
 		}
 
 		post, err := toPost(id, m)
 		if err != nil {
-			ps.logger.Errorf("Error while fetching: %v", err)
-			continue
+			return nil, err
 		}
 		posts = append(posts, post)
 	}

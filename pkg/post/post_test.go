@@ -329,6 +329,7 @@ func TestFindMany(t *testing.T) {
 			},
 		},
 		{
+			name: "No filters. Success.",
 			expected: []*Post{
 				{1, "test1", "vt", time.Unix(4, 0)},
 				{2, "test2", "vt", time.Unix(3, 0)},
@@ -385,6 +386,15 @@ func TestFindMany(t *testing.T) {
 				})
 			},
 		},
+		{
+			name:     "No filters. Bad ID.",
+			expected: nil,
+			err:      true,
+			filters:  &SearchFilter{},
+			mock: func() {
+				mock.ExpectScan(0, "post:*", 10).SetVal([]string{"post:1", "post:2", "post:3", "post:bad"}, 0)
+			},
+		},
 		/*{
 			expected: []*Post{},
 			err:      false,
@@ -402,7 +412,7 @@ func TestFindMany(t *testing.T) {
 		if test.err {
 			assert.Error(t, err, test.name)
 		} else {
-			if assert.NoError(t, err) {
+			if assert.NoError(t, err, test.name) {
 				assert.Equal(t, test.expected, id, test.name)
 			}
 		}
