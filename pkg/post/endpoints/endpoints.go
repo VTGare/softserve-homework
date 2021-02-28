@@ -74,6 +74,15 @@ func makeAddEndpoint(svc post.Service) func(http.ResponseWriter, *http.Request) 
 			return
 		}
 
+		switch {
+		case post.Author == "":
+			rw.JSON(&jsonResp{http.StatusBadRequest, "author field cannot be empty."}, http.StatusBadRequest)
+			return
+		case post.Name == "":
+			rw.JSON(&jsonResp{http.StatusBadRequest, "name field cannot be empty."}, http.StatusBadRequest)
+			return
+		}
+
 		id, err := svc.Create(r.Context(), &post)
 		if err != nil {
 			rw.JSON(&jsonResp{http.StatusInternalServerError, ""}, http.StatusInternalServerError)
@@ -81,7 +90,7 @@ func makeAddEndpoint(svc post.Service) func(http.ResponseWriter, *http.Request) 
 		}
 
 		rw.JSON(newPostResp{
-			jsonResp: jsonResp{200, "Succesfully added a post."},
+			jsonResp: jsonResp{200, "Successfully created a new post."},
 			ID:       id,
 		})
 	}
